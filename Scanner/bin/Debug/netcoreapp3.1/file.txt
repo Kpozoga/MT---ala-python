@@ -1,0 +1,27 @@
+class samochod
+{
+    nastepny_numer_produkcyjny = 1337
+    
+    
+    def __init__(self, price)
+    {
+        self.price = price
+        self.numer_produkcyjny = samochod.nastepny_numer_produkcyjny
+        samochod.nastepny_numer_produkcyjny +=1
+    }
+    
+    def czyDrozszy(self, sam)
+    {
+        return self.price-sam.price
+    }
+}
+
+sam = samochod(1000)
+sam2 = samochod(2000)
+
+if sam.czyDrozszy(sam2)
+{
+    sam2 = sam
+}
+
+print(sam2.numer_produkcyjny)
