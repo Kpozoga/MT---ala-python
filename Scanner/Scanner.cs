@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Scanner
 {
-    enum TokenType
+    public enum TokenType
     {
         unknown,
         white_space,
@@ -49,7 +49,7 @@ namespace Scanner
         comma,
         dot
     }
-    struct Token
+    public struct Token
     {
         public TokenType type; // one of the token codes from above
         public string stringVal;
@@ -77,11 +77,11 @@ namespace Scanner
             this.endPos = 0;
         }
     };
-    interface ITokenator
+    public interface ITokenator
     {
         public Token GetNextToken();
     }
-    class Filter : ITokenator
+    public class Filter : ITokenator
     {
         Scanner scan;
         public Filter(string path)
@@ -107,7 +107,7 @@ namespace Scanner
 
     }
 
-    class Scanner : ITokenator
+    public class Scanner : ITokenator
     {
         Dictionary<string, TokenType> keyWords;
         StreamReader file;
@@ -122,6 +122,10 @@ namespace Scanner
             keyWords.Add("class", TokenType.class_def);
             keyWords.Add("def", TokenType.fun_def);
             keyWords.Add("return", TokenType.return_token);
+        }
+        ~Scanner()
+        {
+            file.Close();
         }
         public Scanner(string path)
         {
@@ -151,7 +155,7 @@ namespace Scanner
                 case '\r':
                 case '\n':
                     type = TokenType.end_of_line;
-                    ScanEndOfLine();
+                    ScanEndOfLine(c);
                     break;
                 case '\t': type = TokenType.tabulator; break;
                 case ' ': type = TokenType.white_space; break;
@@ -217,7 +221,7 @@ namespace Scanner
         {
             sb.Clear();
             char c = (char)file.Peek();
-            while (c != Environment.NewLine[0])
+            while (c != Environment.NewLine[0] && c != '\n')
             {
                 c = GetNextChar();
                 sb.Append(c);
@@ -287,16 +291,19 @@ namespace Scanner
             charNr++;
             return c;
         }
-        private void ScanEndOfLine()
+        private void ScanEndOfLine(char n)
         {
-            for (int i = 1; i < Environment.NewLine.Length; i++)
-            {
-                char c = GetNextChar();
-                if (c != Environment.NewLine[i])
-                    throw new Exception("OS error");
-            }
             lineNr++;
             charNr = 0;
+            if (n == '\n')
+                return;
+            else
+                for (int i = 1; i < Environment.NewLine.Length; i++)
+                {
+                    char c = GetNextChar();
+                    if (c != Environment.NewLine[i])
+                        throw new Exception("OS error");
+                }
         }
     }
 }

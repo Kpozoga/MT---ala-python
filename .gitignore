@@ -1,0 +1,8 @@
+.idea
+.vs
+
+Scanner/bin
+Scanner/obj
+
+ScannerUnitTests/bin
+ScannerUnitTests/obj
