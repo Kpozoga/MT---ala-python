@@ -18,6 +18,7 @@ namespace ScannerUnitTests
         {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
             file.Write(bytes, 0, bytes.Length);
+            file.Position = 0;
         }
         [SetUp]
         public void Setup()
@@ -31,13 +32,14 @@ namespace ScannerUnitTests
             var name = "white_space" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, " ");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.white_space)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -47,13 +49,14 @@ namespace ScannerUnitTests
             var name = "tabulator" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "\t");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.tabulator)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -63,13 +66,14 @@ namespace ScannerUnitTests
             var name = "end_of_line" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, System.Environment.NewLine);
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.end_of_line)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();         
             File.Delete(name);
         }
 
@@ -78,13 +82,14 @@ namespace ScannerUnitTests
         {
             var name = "end_of_file" + ".txt";
             var file = ResetFile(name);
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.end_of_file)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -94,13 +99,14 @@ namespace ScannerUnitTests
             var name = "id" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "some134_id2");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.id)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -110,13 +116,14 @@ namespace ScannerUnitTests
             var name = "fun_def" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "def fun1 (a,b)");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.fun_def)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -126,13 +133,14 @@ namespace ScannerUnitTests
             var name = "class_def" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "class motor");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.class_def)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -142,13 +150,14 @@ namespace ScannerUnitTests
             var name = "open_brace" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "{");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.open_brace)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -158,13 +167,14 @@ namespace ScannerUnitTests
             var name = "close_brace" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "}");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.close_brace)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -174,13 +184,14 @@ namespace ScannerUnitTests
             var name = "open_par" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "(");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.open_par)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -190,13 +201,14 @@ namespace ScannerUnitTests
             var name = "close_par" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, ")");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.close_par)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -206,13 +218,14 @@ namespace ScannerUnitTests
             var name = "return_token" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "return to monke");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.return_token)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -222,13 +235,14 @@ namespace ScannerUnitTests
             var name = "if_token" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "if u love something");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.if_token)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -238,13 +252,14 @@ namespace ScannerUnitTests
             var name = "while_token" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "while waiting for better tomorrow");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.while_token)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -254,13 +269,14 @@ namespace ScannerUnitTests
             var name = "for_token" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "for the motherland");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.for_token)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -270,13 +286,14 @@ namespace ScannerUnitTests
             var name = "comment" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "# just normal comment, keep scrolling \n");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.comment)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -287,13 +304,14 @@ namespace ScannerUnitTests
             var file = ResetFile(name);
             int num = 278566; //some souce
             WriteToFile(file, num.ToString());
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.int_number && t.intVal == num)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -302,15 +320,17 @@ namespace ScannerUnitTests
         {
             var name = "string_const" + ".txt";
             var file = ResetFile(name);
-            string content = "i hope nothing brokes here \\\", like rly";
+            string content = "i hope nothing \\t brokes here \\n \\\", like rly";
+            string decoded = "i hope nothing \t brokes here \n \", like rly";
             WriteToFile(file, "\"" + content + "\"");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
-            if (t.type == Scanner.TokenType.string_const && t.stringVal == content)
+            if (t.type == Scanner.TokenType.string_const && t.stringVal == decoded)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -320,13 +340,14 @@ namespace ScannerUnitTests
             var name = "assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -336,13 +357,14 @@ namespace ScannerUnitTests
             var name = "or" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "||");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.or)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -352,13 +374,14 @@ namespace ScannerUnitTests
             var name = "and" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "&&");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.and)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -368,13 +391,14 @@ namespace ScannerUnitTests
             var name = "negation" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "!prawda");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.negation)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -384,13 +408,14 @@ namespace ScannerUnitTests
             var name = "equal" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "==");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.equal)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -400,13 +425,14 @@ namespace ScannerUnitTests
             var name = "not_equal" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "!=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.not_equal)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -416,13 +442,14 @@ namespace ScannerUnitTests
             var name = "greater" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, ">");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.greater)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -432,13 +459,14 @@ namespace ScannerUnitTests
             var name = "greater_or_equal" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, ">=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.greater_or_equal)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -448,13 +476,14 @@ namespace ScannerUnitTests
             var name = "less" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "<");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.less)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -464,13 +493,14 @@ namespace ScannerUnitTests
             var name = "less_or_equal" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "<=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.less_or_equal)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -480,13 +510,14 @@ namespace ScannerUnitTests
             var name = "add" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "+");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.add)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -496,13 +527,14 @@ namespace ScannerUnitTests
             var name = "add_assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "+=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.add_assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -512,13 +544,14 @@ namespace ScannerUnitTests
             var name = "minus" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "-69");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.minus)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -528,13 +561,14 @@ namespace ScannerUnitTests
             var name = "minus_assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "-=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.minus_assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -544,13 +578,14 @@ namespace ScannerUnitTests
             var name = "multiply" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "*");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.multiply)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -560,13 +595,14 @@ namespace ScannerUnitTests
             var name = "multiply_assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "*=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.multiply_assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -576,13 +612,14 @@ namespace ScannerUnitTests
             var name = "divide" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "/");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.divide)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -592,13 +629,14 @@ namespace ScannerUnitTests
             var name = "divide_assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "/=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.divide_assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -608,13 +646,14 @@ namespace ScannerUnitTests
             var name = "divide_mod" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "%");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.divide_mod)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -624,13 +663,14 @@ namespace ScannerUnitTests
             var name = "divide_mod_assign" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "%=");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.divide_mod_assign)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -640,13 +680,14 @@ namespace ScannerUnitTests
             var name = "comma" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, ",");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.comma)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -656,13 +697,14 @@ namespace ScannerUnitTests
             var name = "dot" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, ".");
-            file.Close();
-            var scan = new Scanner.Scanner(name);
+            var stRead = new StreamReader(file);
+            var scan = new Scanner.Scanner(stRead);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.dot)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
 
@@ -672,13 +714,15 @@ namespace ScannerUnitTests
             var name = "Filter_should_ignore_white_spaces_etc" + ".txt";
             var file = ResetFile(name);
             WriteToFile(file, "     \n      #adfdgh \n{");
-            file.Close();
-            var scan = new Scanner.Filter(name);
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
             var t = scan.GetNextToken();
             if (t.type == Scanner.TokenType.open_brace)
                 Assert.Pass();
             else
                 Assert.Fail();
+            file.Close();
             File.Delete(name);
         }
     }

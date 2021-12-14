@@ -6,3 +6,11 @@ Scanner/obj
 
 ScannerUnitTests/bin
 ScannerUnitTests/obj
+
+Parser/bin
+Parser/obj
+
+ParserUnitTests/bin
+ParserUnitTests/obj
+ParserTests/bin
+ParserTests/obj

@@ -5,7 +5,11 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scanner", "Scanner\Scanner.csproj", "{5D32FF70-51DC-446F-BA3A-8C5162C38F2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerUnitTests", "ScannerUnitTests\ScannerUnitTests.csproj", "{78071D61-F0F5-491A-B6A6-C2B1A1857B51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScannerUnitTests", "ScannerUnitTests\ScannerUnitTests.csproj", "{78071D61-F0F5-491A-B6A6-C2B1A1857B51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{BA1742E7-EF7A-4941-8188-7A957A245809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserTests", "ParserTests\ParserTests.csproj", "{813CD829-24F7-4F64-A34C-D7DB3C27B1D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{78071D61-F0F5-491A-B6A6-C2B1A1857B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78071D61-F0F5-491A-B6A6-C2B1A1857B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78071D61-F0F5-491A-B6A6-C2B1A1857B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA1742E7-EF7A-4941-8188-7A957A245809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA1742E7-EF7A-4941-8188-7A957A245809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA1742E7-EF7A-4941-8188-7A957A245809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA1742E7-EF7A-4941-8188-7A957A245809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{813CD829-24F7-4F64-A34C-D7DB3C27B1D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{813CD829-24F7-4F64-A34C-D7DB3C27B1D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{813CD829-24F7-4F64-A34C-D7DB3C27B1D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{813CD829-24F7-4F64-A34C-D7DB3C27B1D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

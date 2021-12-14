@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text;
+using Scanner;
 using System.IO;
 
-namespace Scanner
+namespace Parser
 {
     class Program
     {
@@ -14,11 +14,11 @@ namespace Scanner
             Console.WriteLine();
             ITokenator scan;
             StreamReader stream = StreamReader.Null;
-            if (key.KeyChar=='1')
+            if (key.KeyChar == '1')
             {
                 Console.WriteLine("Podaj ścieżkę do pliku");
-                // using stream
-                string path = Console.ReadLine();
+                //string path = Console.ReadLine();
+                string path = "file.txt";
                 try
                 {
                     stream = new StreamReader(path);
@@ -26,22 +26,28 @@ namespace Scanner
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
-                }             
+                }
             }
             else
             {
                 Console.WriteLine("Skaner będzie czytał z konsoli");
                 stream = new StreamReader(Console.OpenStandardInput());
             }
-            scan = new Scanner(stream);
+            scan = new Scanner.Scanner(stream);
             scan = new Filter(scan);
-            Token t = new Token();
-            while (t.type != TokenType.end_of_file) 
-            {
-                t = scan.GetNextToken();
-                Console.WriteLine(t.type);
-            }
+            var pars = new Parser(scan);
+            var head = pars.Parse();
+            printTree(head);
             Console.ReadKey();
+        }
+
+        static void printTree(INode node, string pf = "")
+        {
+            Console.WriteLine(pf + node);
+            if (node.Children == null) return;
+            foreach (var c in node.Children)
+                printTree(c, pf + "  ");
+
         }
     }
 }

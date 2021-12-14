@@ -83,14 +83,10 @@ namespace Scanner
     }
     public class Filter : ITokenator
     {
-        Scanner scan;
-        public Filter(string path)
+        ITokenator scan;
+        public Filter(ITokenator tok) 
         {
-            scan = new Scanner(path);
-        }
-        public Filter(Stream st)
-        {
-            scan = new Scanner(st);
+            scan = tok;
         }
         public Token GetNextToken()
         {
@@ -104,7 +100,6 @@ namespace Scanner
             || t.type == TokenType.end_of_line);
             return t;
         }
-
     }
 
     public class Scanner : ITokenator
@@ -113,6 +108,8 @@ namespace Scanner
         StreamReader file;
         int lineNr = 1;
         int charNr = 0;
+        char c;
+        bool scanNext;
         private void initKeywords()
         {
             keyWords = new Dictionary<string, TokenType>();
@@ -123,39 +120,33 @@ namespace Scanner
             keyWords.Add("def", TokenType.fun_def);
             keyWords.Add("return", TokenType.return_token);
         }
-        ~Scanner()
+
+        public Scanner(StreamReader stream) 
         {
-            file.Close();
-        }
-        public Scanner(string path)
-        {
+            file = stream;
             initKeywords();
-            try {
-                file = new StreamReader(path);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            c = GetNextChar();
         }
-        public Scanner(Stream st)
-        {
-            initKeywords();
-            file = new StreamReader(st);     
-        }
+        //public Scanner(Stream st)
+        //{
+        //    //GetNextChar
+        //    initKeywords();       
+        //    file = new StreamReader(st);
+        //    c = GetNextChar();
+        //}
         public Token GetNextToken()
         {        
-            StringBuilder sb = new StringBuilder();
-            char c = GetNextChar();
+            StringBuilder sb = new StringBuilder();         
             sb.Append(c);
             int start = charNr, val = 0;         
             TokenType type = TokenType.unknown;
+            scanNext = true;
             switch(c)
             {
                 case '\r':
                 case '\n':
                     type = TokenType.end_of_line;
-                    ScanEndOfLine(c);
+                    ScanEndOfLine();
                     break;
                 case '\t': type = TokenType.tabulator; break;
                 case ' ': type = TokenType.white_space; break;
@@ -199,7 +190,7 @@ namespace Scanner
                     else type = TokenType.unknown; break;
                 case '#': type = TokenType.comment; SkipSingleLineComment(sb); break;
                 case '"': type = TokenType.string_const; ScanString(sb); break;
-                case (char)0x1A: type = TokenType.end_of_file; break; // end of file
+                case (char)0x03: type = TokenType.end_of_file; break; // end of file
                 default:
                     {
                         if (char.IsLetter(c) || c == '_')
@@ -207,12 +198,17 @@ namespace Scanner
                         if (char.IsDigit(c))
                         {
                             type = TokenType.int_number;
-                            val = ScanInt(c);
+                            if (c == '0')
+                                val = 0;
+                            else
+                                val = ScanInt();
                         }
                     }
                     break;
 
             }
+            if (scanNext)
+                c = GetNextChar();
             int end = charNr;
             return new Token(type, val, sb.ToString(), lineNr, start, end);
         }
@@ -220,90 +216,114 @@ namespace Scanner
         private void SkipSingleLineComment(StringBuilder sb)
         {
             sb.Clear();
-            char c = (char)file.Peek();
+            c = GetNextChar();
             while (c != Environment.NewLine[0] && c != '\n')
             {
-                c = GetNextChar();
                 sb.Append(c);
-                int intc = file.Peek();         
-                c = (char)intc;
-                if (intc == -1) break;
+                c = GetNextChar();           
+                if (c == (char)0x03) break;
             }
+            scanNext = false;
         }
         private void ScanString(StringBuilder sb)
         {
+            scanNext = false;
             sb.Clear();
-            char c = GetNextChar();
-            char prev = 'a';
-            while (c != '"' || prev == '\\')
+            c = GetNextChar();
+            while (c != '"') // odkodowanie znaków specjalnych
             {
+                if (c == '\\')
+                {
+                    c = GetNextChar();
+                    switch(c)
+                    {
+                        case 't': c = '\t'; break;
+                        case 'n': c = '\n'; break;
+                        case 'r': c = '\r'; break;
+                        case '"': c = '"'; break;
+                        case '\\': c = '\\'; break;
+                    }
+                }
+                if (c == (char)0x03)
+                    return;
                 sb.Append(c);
-                prev = c;
-                c = GetNextChar();
+                if (c == '\n' || c == '\r')
+                {
+                    if (ScanEndOfLine())
+                    {
+                        sb.Append(c);
+                        c = GetNextChar();
+                    }           
+                }
+                else
+                    c = GetNextChar();
             }
+            scanNext = true;
         }
-        private int ScanInt(char startc)
+        private int ScanInt()
         {
-            int val = (startc - '0');
-            char c = (char)file.Peek();
+            int val = (c - '0');
+            c = c = GetNextChar();
             while (char.IsDigit(c))
             {
-                c = GetNextChar();
+                
                 val = val * 10 + (c - '0');
-                c = (char)file.Peek();
+                c = GetNextChar();
             }
+            scanNext = false;
             return val;
         }
         private bool ScanIsNextEqual(StringBuilder sb, char next)
         {
-            char c = (char)file.Peek();
+            c = GetNextChar();
             if (c == next)
-            {
-                c = GetNextChar();
+            {              
                 sb.Append(c);
                 return true;
             }
+            scanNext = false; 
             return false;
         }
 
         private TokenType ScanLetters(StringBuilder sb)
         {
-            char c = (char)file.Peek();
-            while(char.IsLetterOrDigit(c) || c == '_')
+            c = GetNextChar();
+            while (char.IsLetterOrDigit(c) || c == '_')
             {
-                c = GetNextChar();
+                
                 sb.Append(c);
-                c = (char)file.Peek();
+                c = GetNextChar();
             }
             string s = sb.ToString();
             if (keyWords.ContainsKey(s))
                 return keyWords[s];
+            scanNext = false;
             return TokenType.id;
         }
 
         private char GetNextChar()
         {
-            //offset += file.Read(b, offset, 1);
             int intc = file.Read();
             char c = (char)intc;
             if (intc == -1)
-                c = (char)0x1A;
+                c = (char)0x03;          
             charNr++;
             return c;
         }
-        private void ScanEndOfLine(char n)
+        private bool ScanEndOfLine()
         {
             lineNr++;
             charNr = 0;
-            if (n == '\n')
-                return;
-            else
-                for (int i = 1; i < Environment.NewLine.Length; i++)
-                {
-                    char c = GetNextChar();
-                    if (c != Environment.NewLine[i])
-                        throw new Exception("OS error");
-                }
+            char current = c;
+            c = GetNextChar();
+            if (current == '\r' && c == '\n')
+            {
+                charNr = 0;
+                scanNext = true;
+                return true;
+            }
+            scanNext = false;
+            return false;
         }
     }
 }
