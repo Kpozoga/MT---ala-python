@@ -35,7 +35,7 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            var node = pars.ParseClassOrFunDef();
+            var node = pars.TryParseClassDef();
             if (node is ClassNode)
                 Assert.Pass();
             else
@@ -54,7 +54,7 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            var node = pars.ParseClassOrFunDef();
+            var node = pars.TryParseFunDef();
             if (node is FunNode)
                 Assert.Pass();
             else
@@ -72,8 +72,7 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            pars.current = pars.scan.GetNextToken();
-            var node = pars.ParseValueRefOrFunCall();
+            var node = pars.TryParseValueRefOrFunCall();
             if (node is Parser.FunCall)
                 Assert.Pass();
             else
@@ -92,7 +91,7 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            var node = pars.ParseClassOrFunDef();
+            var node = pars.TryParseClassDef();
             if (node is ClassNode n && n.Children[0] is AssignExpression)
                 Assert.Pass();
             else
@@ -111,7 +110,7 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            var node = pars.ParseClassOrFunDef();
+            var node = pars.TryParseClassDef();
             if (node is ClassNode n && n.Children[0] is FunNode)
                 Assert.Pass();
             else
@@ -130,7 +129,6 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            pars.current = pars.scan.GetNextToken();
             var node = pars.ParsePrimaryExpression();
             if (node is NumericValue)
                 Assert.Pass();
@@ -150,11 +148,12 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            pars.current = pars.scan.GetNextToken();
+            pars.current = pars.scanner.GetNextToken();
             try{
                 var node = pars.ParsePrimaryExpression();
-            }catch (TokenMismatchException e) { Assert.Pass(); }
                 Assert.Fail();
+            }
+            catch (TokenMismatchException e) { Assert.Pass(); }          
             file.Close();
             File.Delete(name);
         }
@@ -169,8 +168,123 @@ namespace ParserTests
             Scanner.ITokenator scan = new Scanner.Scanner(stRead);
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
-            var node = pars.ParseValueRefOrFunCall();
+            var node = pars.TryParseValueRefOrFunCall();
             if (node is ValueRef)
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+        [Test]
+        public void FunCallParams()
+        {
+            var name = "FunCallParams" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "(14, \"string\", var_ref)");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var funParams = pars.TryParseFunCallParams();
+            if (funParams[0] is NumericValue && funParams[1] is StringValue && funParams[2] is ValueRef)
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+        [Test]
+        public void MultExpression()
+        {
+            var name = "MultExpression" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "1*a*5");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var exp = pars.ParseMultExpression();
+            if (exp is MultiplicativeExpression e && e.right is NumericValue && e.left is MultiplicativeExpression)
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+        [Test]
+        public void AddExpression()
+        {
+            var name = "AddExpression" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "1 + 25 - 10");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var exp = pars.ParseExpression();
+            if (exp is AdditiveExpression e && e.right is NumericValue && e.left is AdditiveExpression && e.op == "-")
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+        [Test]
+        public void Return()
+        {
+            var name = "Return" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "return 13");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var node = pars.TryParseReturn();
+            if (node is ReturnNode n && n.Children[0] is NumericValue)
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+
+        [Test]
+        public void LineAssign()
+        {
+            var name = "LineAssign" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "a = 1");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var node = pars.TryParseLine();
+            if (node is AssignExpression n && n.left is ValueRef && n.right is NumericValue)
+                Assert.Pass();
+            else
+                Assert.Fail();
+            file.Close();
+            File.Delete(name);
+        }
+
+        [Test]
+        public void LineFunCall()
+        {
+            var name = "LineFunCall" + ".txt";
+            var file = ResetFile(name);
+            WriteToFile(file, "line_call(1,2,3)");
+            var stRead = new StreamReader(file);
+            Scanner.ITokenator scan = new Scanner.Scanner(stRead);
+            scan = new Scanner.Filter(scan);
+            var pars = new Parser.Parser(scan);
+            var node = pars.TryParseLine();
+            if (node is FunCall n && n.funParams.Count == 3)
                 Assert.Pass();
             else
                 Assert.Fail();

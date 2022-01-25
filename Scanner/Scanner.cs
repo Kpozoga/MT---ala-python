@@ -47,6 +47,7 @@ namespace Scanner
         divide_mod,
         divide_mod_assign,
         comma,
+        colon,
         dot
     }
     public struct Token
@@ -152,6 +153,7 @@ namespace Scanner
                 case ' ': type = TokenType.white_space; break;
                 case ',': type = TokenType.comma; break;
                 case '.': type = TokenType.dot; break;
+                case ':': type = TokenType.colon; break;
                 case '(': type = TokenType.open_par;  break;
                 case ')': type = TokenType.close_par; break;
                 case '{': type = TokenType.open_brace; break;
@@ -232,6 +234,15 @@ namespace Scanner
             c = GetNextChar();
             while (c != '"') // odkodowanie znaków specjalnych
             {
+                if (c == '\n' || c == '\r')
+                {
+                    sb.Append(c);
+                    if (ScanEndOfLine())
+                    {
+                        sb.Append(c);
+                        c = GetNextChar();
+                    }
+                }
                 if (c == '\\')
                 {
                     c = GetNextChar();
@@ -247,16 +258,7 @@ namespace Scanner
                 if (c == (char)0x03)
                     return;
                 sb.Append(c);
-                if (c == '\n' || c == '\r')
-                {
-                    if (ScanEndOfLine())
-                    {
-                        sb.Append(c);
-                        c = GetNextChar();
-                    }           
-                }
-                else
-                    c = GetNextChar();
+                c = GetNextChar();
             }
             scanNext = true;
         }
@@ -295,9 +297,9 @@ namespace Scanner
                 c = GetNextChar();
             }
             string s = sb.ToString();
-            if (keyWords.ContainsKey(s))
-                return keyWords[s];
             scanNext = false;
+            if (keyWords.ContainsKey(s))
+                return keyWords[s];         
             return TokenType.id;
         }
 

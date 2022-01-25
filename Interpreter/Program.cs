@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Parser;
 using Scanner;
+using System;
 using System.IO;
 
-namespace Parser
+namespace Interpreter
 {
     class Program
     {
@@ -35,9 +36,12 @@ namespace Parser
             }
             scan = new Scanner.Scanner(stream);
             scan = new Filter(scan);
-            var pars = new Parser(scan);
-            var head = pars.Parse();
+            IParser pars = new Parser.Parser(scan);
+            var head = pars.Parse();          
             printTree(head);
+            Console.WriteLine();
+            IVisitor interpreter = new Interpreter();
+            interpreter.Visit(head);
             Console.ReadKey();
         }
 

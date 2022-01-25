@@ -7,335 +7,163 @@ namespace Parser
 {
     public class TokenMismatchException : Exception
     {
+        //public TokenType ExpectedType;
+        //public Token ActualToken;
+        //public TokenMismatchException(Token actual, TokenType expected = TokenType.unknown) {
+        //    this.ActualToken = actual;
+        //    this.ExpectedType = expected;
+        //    string s = $"Unexpected token {actual.type} at line {actual.lineNr}, character {actual.startPos}.";
+        //    if (expected != TokenType.unknown)
+        //        s += $" Expected token was {expected}.";
+        //    //this.Message = s;
+        //}
         public TokenMismatchException() {}
         public TokenMismatchException(string message) : base(message) {}
         public TokenMismatchException(string message, Exception inner) : base(message, inner) {}
     }
-    public abstract class INode
+    public interface IParser
     {
-        public List<INode> Children { set; get; }
+        public INode Parse();
     }
-    public interface IExpression
+    public class Parser : IParser
     {
-        public int Mod { set; get; }
-    }
-    public class AdditiveExpression : INode, IExpression
-    {
-        string op;
-        IExpression left;
-        IExpression right;
-        public AdditiveExpression(string op, IExpression left, IExpression right)
-        {
-            this.Children = new List<INode>();
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            if (left is INode l)
-                this.Children.Add(l);
-            if (right is INode r)
-                this.Children.Add(r);
-        }
-        public int Mod { set; get; }
-        public override string ToString()
-        {
-            return $"Additive expression {op}";// + left.ToString() + "\n" + right.ToString();
-        }
-    }  
-    public class MultiplicativeExpression : INode, IExpression
-    {
-        string op;
-        IExpression left;
-        IExpression right;
-        public MultiplicativeExpression(string op, IExpression left, IExpression right)
-        {
-            this.Children = new List<INode>();
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            if (left is INode l)
-                this.Children.Add(l);
-            if (right is INode r)
-                this.Children.Add(r);
-        }
-
-        public int Mod { set; get; }
-        public override string ToString()
-        {
-            return $"Multiplicative expression {op}";// + left.ToString() + "\n" + right.ToString();
-        }
-    }
-    public class DivideExpression : INode, IExpression
-    {
-        public int Mod { set; get; }
-    }
-    public class AssignExpression : INode, IExpression
-    {
-        string op;
-        IExpression left;
-        IExpression right;
-        public AssignExpression(string op, IExpression left, IExpression right)
-        {
-            this.Children = new List<INode>();
-            this.op = op;
-            this.left = left;
-            this.right = right;
-            if (left is INode l)
-                this.Children.Add(l);
-            if (right is INode r)
-                this.Children.Add(r);
-        }
-
-        public int Mod { set; get; }
-        public override string ToString()
-        {
-            return $"Assign expression {op}";// + left.ToString() + "\n" + right.ToString();
-        }
-    }
-    public class NumericValue : INode, IExpression
-    {
-        int val;
-        public int Mod { set; get; }
-
-        public NumericValue(int val)
-        {
-            this.val = val;
-        }
-        public override string ToString()
-        {
-            var m = Mod == -1 ? "-" : "";
-            return $"Numeric value: {m}{val}";
-        }
-    }
-    public class StringValue : INode, IExpression
-    {
-        string val;
-        public int Mod { set; get; }
-
-        public StringValue(string val)
-        {
-            this.val = val;
-        }
-        public override string ToString()
-        {
-            return $"String const: \"{val}\"";
-        }
-    }
-    public class ValueRef : INode, IExpression
-    {
-        string name;
-        public int Mod { set; get; }
-
-        public ValueRef(string val)
-        {
-            this.name = val;
-        }
-        public override string ToString()
-        {
-            var m = Mod == -1 ? "-" : "";
-            return $"Variable reference: {m}{name}";
-        }
-    }
-    public class FunCall : INode, IExpression
-    {
-        string name;
-        List<IExpression> funParams;
-
-        public FunCall(string name, List<IExpression> funParams)
-        {
-            this.name = name;
-            this.funParams = funParams;
-        }
-        public int Mod { set; get; }
-        public override string ToString()
-        {
-            var m = Mod == -1 ? "-" : "";
-            var s = $"Function call: {m}{name}() with params: ";
-            foreach(var p in funParams)
-            { s += (p.ToString() + ", "); }
-            return s; 
-        }
-    }
-    public class ReturnNode : INode
-    {
-        public ReturnNode(IExpression exp)
-        {
-            this.Children = new List<INode>();
-            if(exp is INode n)
-                this.Children.Add(n);
-        }
-
-        public override string ToString()
-        {
-            return $"Return";
-        }
-    }
-    public class ClassNode : INode
-    {
-        string name;
-        public ClassNode(string name, List<INode> list)
-        {
-            this.name = name;
-            this.Children = list;
-        }
-
-        public override string ToString()
-        {
-            return $"Class {name}";
-        }
-    }
-    public class ProgramNode : INode
-    {
-        public ProgramNode(List<INode> list)
-        {
-            this.Children = list;
-        }
-
-        public override string ToString()
-        {
-            return "Program";
-        }
-    }
-    public class FunNode : INode
-    {
-        string name;
-        List<string> args;
-        public FunNode(string name, List<string> args, List<INode> list)
-        {
-            this.Children = list;
-            this.name = name;
-            this.args = args;
-
-        }
-        public override string ToString()
-        {
-            StringBuilder s = new StringBuilder(base.ToString() + $" name: {name}, args: ");
-            foreach(string arg in args)
-            {
-                s.Append(arg);
-                s.Append(", ");
-            }
-            return s.ToString().TrimEnd().TrimEnd(',');
-        }
-    }
-    public class Parser
-    {
-        public ITokenator scan;
+        public ITokenator scanner;
         public Token current;
         public Parser(ITokenator scanner)
         {
-            scan = scanner;
+            this.scanner = scanner;
+            current = this.scanner.GetNextToken();
         }
         public INode Parse()
         {
             List<INode> defs = new List<INode>();
             INode def;
-            while ((def = ParseClassOrFunDef())!= null)
+            do
             {
-                defs.Add(def);
+                def = TryParseClassDef();
+                if (def == null)
+                    def = TryParseFunDef();
+                if (def != null)
+                    defs.Add(def);
                 //Console.WriteLine(def);
-                //current = scan.GetNextToken();
-            }
+            } while (def != null);
             return new ProgramNode(defs);
         }
-        public INode ParseClassOrFunDef()
+
+        public INode TryParseClassDef()
         {
-            current = scan.GetNextToken();
-            if (current.type == TokenType.class_def)
-                return ParseClassDef();
-            if (current.type == TokenType.fun_def)
-                return ParseFunDef();
-            return null;
-        }
-        public INode ParseClassDef()
-        {
+            if (current.type != TokenType.class_def)
+                return null;
             List<INode> nodes = new List<INode>();
             MatchNextToken(TokenType.id);
             string name = current.stringVal;
             MatchNextToken(TokenType.open_brace);
-            current = scan.GetNextToken();
-            while(current.type!=TokenType.close_brace)
+            current = scanner.GetNextToken();
+            INode node;
+            do
             {
-                INode node = null;
-                if (current.type==TokenType.id)
-                {
-                    string varName = current.stringVal;
-                    MatchNextToken(TokenType.assign);
-                    current = scan.GetNextToken();
-                    IExpression exp = ParseExpression();
-                    node = new AssignExpression("=", new ValueRef(varName), exp);
-                }
-                else if (current.type == TokenType.fun_def)
-                {
-                    node = ParseFunDef();
-                }
+                node = TryParseVarDef(name + '.');
+                if (node == null)
+                    node = TryParseFunDef(name + '.');
                 if (node != null)
                     nodes.Add(node);
-            }
+            } while (node != null) ;
+            MatchCurrentTokenAndConsume(TokenType.close_brace);
             return new ClassNode(name, nodes);
         }
-        public INode ParseFunDef()
+        public INode TryParseVarDef(string prefix = "")
         {
+            if (current.type != TokenType.id)
+                return null;
+            string varName = prefix + current.stringVal;
+            MatchNextToken(TokenType.assign);
+            current = scanner.GetNextToken();
+            IExpression exp = ParseExpression();
+            return new AssignExpression("=", new ValueRef(varName), exp);
+        }
+        public INode TryParseFunDef(string prefix = "")
+        {
+            if (current.type != TokenType.fun_def)
+                return null;
             MatchNextToken(TokenType.id);
-            string name = current.stringVal;
+            string name = prefix + current.stringVal;
+            current = scanner.GetNextToken();
             var args = ParseFunArgs();
-            var body = ParseBlock();
+            var body = ParseFunBody();
             return new FunNode(name, args, body);
         }
         public List<string> ParseFunArgs()
         {
-            MatchNextToken(TokenType.open_par);
+            MatchCurrentTokenAndConsume(TokenType.open_par);
             var args = new List<string>();
-            current = scan.GetNextToken();
-            if (current.type == TokenType.id)
+            while (current.type == TokenType.id)
             {
                 args.Add(current.stringVal);
-                current = scan.GetNextToken();
-                while (current.type != TokenType.close_par)
-                {
-                    MatchCurrentToken(TokenType.comma);
+                current = scanner.GetNextToken();                
+                if (current.type == TokenType.comma)
                     MatchNextToken(TokenType.id);
-                    args.Add(current.stringVal);
-                    current = scan.GetNextToken();
-                }
             }
+            MatchCurrentTokenAndConsume(TokenType.close_par);
             return args;
+        }
+        public List<INode> ParseFunBody()
+        {
+            MatchCurrentTokenAndConsume(TokenType.open_brace);
+            List<INode> nodes = ParseBlockBody();
+            INode ret = TryParseReturn();
+            if (ret != null)
+                nodes.Add(ret);
+            MatchCurrentTokenAndConsume(TokenType.close_brace);
+            return nodes;
         }
         public List<INode> ParseBlock()
         {
-            MatchNextToken(TokenType.open_brace);
-            current = scan.GetNextToken();
-            List<INode> nodes = new List<INode>();
-            INode node;
-            while (current.type != TokenType.close_brace)
-            {
-                node = null;
-                switch (current.type)
-                {
-                    case TokenType.if_token: break;
-                    case TokenType.while_token: break;
-                    case TokenType.for_token: break;
-                    case TokenType.id: node = ParseLine(); break;
-                    case TokenType.return_token: node = ParseReturn(); break; // chyba złe miejsce na return
-                    //default:  ParseExpression(); break;
-                    default: throw new TokenMismatchException($"Unexpected token {current.type} at line {current.lineNr}, character {current.startPos}");
-                }
-                if (node!=null)
-                    nodes.Add(node);
-            }
-            //current = scan.GetNextToken();
+            MatchCurrentTokenAndConsume(TokenType.open_brace);
+            List<INode> nodes = ParseBlockBody();
+            MatchCurrentTokenAndConsume(TokenType.close_brace);
             return nodes;
         }
-        public INode ParseLine()
+        public List<INode> ParseBlockBody()
         {
-            var exp = ParseValueRefOrFunCall();
-            if (exp is ValueRef)
+            List<INode> nodes = new List<INode>();
+            INode node;
+            do
+            {
+                node = TryParseLine();
+                if (node == null)
+                    node = TryParseIf();
+                if (node == null)
+                    node = TryParseWhile();
+                if (node == null)
+                    node = TryParseFor();
+                //switch (current.type)
+                //{
+                //    case TokenType.if_token: break;
+                //    case TokenType.while_token: break;
+                //    case TokenType.for_token: break;
+                //    case TokenType.id: node = ParseLine(); break;
+
+                //    //default:  ParseExpression(); break;
+                //    default: throw new TokenMismatchException($"Unexpected token {current.type} at line {current.lineNr}, character {current.startPos}");
+                //}
+                if (node!=null)
+                    nodes.Add(node);
+            }while (node != null) ;
+            return nodes;
+        }
+        public INode TryParseLine()
+        {
+            var exp = TryParseValueRefOrFunCall();
+            if (exp == null)
+                return null;
+            if (exp is ValueRef varRef)
             {
                 if(isAssignOp(current.type))
                 {
                     var op = current.stringVal;
-                    current = scan.GetNextToken();
+                    current = scanner.GetNextToken();
                     var right = ParseExpression();
-                    exp = new AssignExpression(op, exp, right);
+                    exp = new AssignExpression(op, varRef, right);
                 }
                 else
                 {
@@ -346,9 +174,57 @@ namespace Parser
                 return n;
             else return null;
         }
-        public INode ParseReturn()
+        public INode TryParseFor()
         {
-            current = scan.GetNextToken();
+            if (current.type != TokenType.for_token)
+                return null;
+            current = scanner.GetNextToken();
+            string it = string.Empty;
+            IExpression from, to;
+            if (current.type == TokenType.id)
+            {
+                it = current.stringVal;
+                MatchNextToken(TokenType.assign);
+                current = scanner.GetNextToken();
+            }
+            from = ParseExpression();
+            if (from == null)
+                ThrowExpressionExpectedErr();
+            MatchCurrentTokenAndConsume(TokenType.colon);
+            to = ParseExpression();
+            if (to == null)
+                ThrowExpressionExpectedErr();
+            return new ForNode(it, from, to, ParseBlock());
+        }
+        public INode TryParseIf()
+        {
+            if (current.type != TokenType.if_token)
+                return null;
+            MatchNextToken(TokenType.open_par);
+            current = scanner.GetNextToken();
+            IExpression cond = ParseLogicExpression();
+            if (cond == null)
+                ThrowExpressionExpectedErr();
+            MatchCurrentTokenAndConsume(TokenType.close_par);
+            return new IfNode(cond, ParseBlock());
+        }
+        public INode TryParseWhile()
+        {
+            if (current.type != TokenType.while_token)
+                return null;
+            MatchNextToken(TokenType.open_par);
+            current = scanner.GetNextToken();
+            IExpression cond = ParseLogicExpression();
+            if (cond == null)
+                ThrowExpressionExpectedErr();
+            MatchCurrentTokenAndConsume(TokenType.close_par);
+            return new WhileNode(cond, ParseBlock());
+        }
+        public INode TryParseReturn()
+        {
+            if (current.type != TokenType.return_token)
+                return null;
+            current = scanner.GetNextToken();
             var exp = ParseExpression();
             return new ReturnNode(exp);
         }
@@ -360,7 +236,7 @@ namespace Parser
             while (isAdditiveOp(current.type))
             {
                 string op = current.stringVal;
-                current = scan.GetNextToken();
+                current = scanner.GetNextToken();
                 var right = ParseMultExpression();
                 if (right == null)
                     throw new TokenMismatchException($"Missing expression after {op} operator at line {current.lineNr}, character {current.startPos}");
@@ -376,11 +252,43 @@ namespace Parser
             while (isMultiplicativeOp(current.type)) 
             {
                 string op = current.stringVal;
-                current = scan.GetNextToken();
+                current = scanner.GetNextToken();
                 var right = ParsePrimaryExpression();
                 if (right == null)
                     throw new TokenMismatchException($"Missing expression after {op} operator at line {current.lineNr}, character {current.startPos}");
                 left = new MultiplicativeExpression(op, left, right);
+            }
+            return left;
+        }
+        public IExpression ParseLogicExpression()
+        {
+            IExpression left = ParseRelativeExpression();
+            if (left == null)
+                return null;
+            while (isConjunctionOp(current.type))
+            {
+                string op = current.stringVal;
+                current = scanner.GetNextToken();
+                var right = ParseRelativeExpression();
+                if (right == null)
+                    throw new TokenMismatchException($"Missing expression after {op} operator at line {current.lineNr}, character {current.startPos}");
+                left = new LogicExpression(op, left, right);
+            }
+            return left;
+        }
+        public IExpression ParseRelativeExpression()
+        {
+            IExpression left = ParseExpression();
+            if (left == null)
+                return null;
+            if (isRelativeOp(current.type))
+            {
+                string op = current.stringVal;
+                current = scanner.GetNextToken();
+                var right = ParseExpression();
+                if (right == null)
+                    throw new TokenMismatchException($"Missing expression after {op} operator at line {current.lineNr}, character {current.startPos}");
+                left = new RelativeExpression(op, left, right);
             }
             return left;
         }
@@ -416,84 +324,112 @@ namespace Parser
                 default: return false;
             }
         }
+        public bool isConjunctionOp(TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.and:
+                case TokenType.or: return true;
+                default: return false;
+            }
+        }
+        public bool isRelativeOp(TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.less:
+                case TokenType.less_or_equal:
+                case TokenType.greater:
+                case TokenType.greater_or_equal:
+                case TokenType.equal:
+                case TokenType.not_equal: return true;
+                default: return false;
+            }
+        }
         public IExpression ParsePrimaryExpression()
         {
             int modifier = 1;
-            if (current.type == TokenType.minus)
+            bool changemod = false;
+            while (current.type == TokenType.minus)
             {
-                modifier = -1;
-                current = scan.GetNextToken();
+                changemod = true;
+                modifier *= -1;
+                current = scanner.GetNextToken();
             }
             IExpression exp;
             switch (current.type)
             {
                 case TokenType.open_par:
                     {
-                        current = scan.GetNextToken();
+                        current = scanner.GetNextToken();
                         exp = ParseExpression();
                         MatchCurrentToken(TokenType.close_par);
-                        current = scan.GetNextToken();
+                        current = scanner.GetNextToken();
                         break;
                     }
                 case TokenType.int_number:
                     {
                         exp = new NumericValue(current.intVal);
-                        current = scan.GetNextToken();
+                        current = scanner.GetNextToken();
                         break;
                     }
                 case TokenType.id:
                     {
-                        exp = ParseValueRefOrFunCall();
+                        exp = TryParseValueRefOrFunCall();
                         break;
                     }
-                default: throw new TokenMismatchException($"Unexpected token {current.type} at line {current.lineNr}, character {current.startPos}");
+                default: exp = null; break;
+                //default: throw new TokenMismatchException($"Unexpected token {current.type} at line {current.lineNr}, character {current.startPos}");
             }
-            exp.Mod = modifier;           
+            if (exp != null && changemod)
+                exp.Mod = modifier;           
             return exp;
         }
-        public IExpression ParseValueRefOrFunCall()
+        public IExpression TryParseValueRefOrFunCall()
         {
-            StringBuilder sb = new StringBuilder(current.stringVal);
-            current = scan.GetNextToken();
+            if (current.type != TokenType.id)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(current.stringVal);
+            current = scanner.GetNextToken();
             while (current.type == TokenType.dot)
             {
                 sb.Append(current.stringVal);
                 MatchNextToken(TokenType.id);
                 sb.Append(current.stringVal);
-                current = scan.GetNextToken();
+                current = scanner.GetNextToken();
             }
-            if (current.type == TokenType.open_par)
-            {
-                var pars = ParseFunCallParams();
-                return new FunCall(sb.ToString(), pars);
-            }
-            else return new ValueRef(sb.ToString());
+            var prs = TryParseFunCallParams();
+            if (prs == null)
+                return new ValueRef(sb.ToString());
+            return new FunCall(sb.ToString(), prs);
         }
-        public List<IExpression> ParseFunCallParams()
-        {
+        public List<IExpression> TryParseFunCallParams()
+        {                    
+            if (current.type != TokenType.open_par)
+                return null;
+            current = scanner.GetNextToken();
             var list = new List<IExpression>();
-            MatchCurrentToken(TokenType.open_par);
-            current = scan.GetNextToken();
+            IExpression exp;
             bool comma;
-            if (current.type != TokenType.close_par)
-                do
+            do
+            {
+                comma = false;
+                if (current.type == TokenType.string_const) //string dopuszczalny tylko w wywołaniach funkcji
                 {
-                    comma = false;
-                    if (current.type == TokenType.string_const) //string dopuszczalny tylko w wywołaniach funkcji
-                    {
-                        list.Add(new StringValue(current.stringVal));
-                        current = scan.GetNextToken();
-                    }
-                    else list.Add(ParseExpression());
-
-                    if (current.type == TokenType.comma)
-                    {
-                        current = scan.GetNextToken();
-                        comma = true;
-                    }
-                } while (comma);       
-            MatchCurrentToken(TokenType.close_par);
-            current = scan.GetNextToken();
+                    exp = new StringValue(current.stringVal);
+                    current = scanner.GetNextToken();
+                }
+                else exp = ParseExpression();
+                if (current.type == TokenType.comma)
+                {
+                    current = scanner.GetNextToken();
+                    comma = true;
+                }
+                if (exp != null)
+                    list.Add(exp);
+            } while (comma);
+            MatchCurrentTokenAndConsume(TokenType.close_par);          
             return list;
         }
         public void MatchCurrentToken(TokenType type)
@@ -503,10 +439,19 @@ namespace Parser
             throw new TokenMismatchException($"Expected {type} token at line {current.lineNr}, character {current.startPos}, but found {current.type} instead.");
             //return false;
         }
+        public void MatchCurrentTokenAndConsume(TokenType type)
+        {
+            MatchCurrentToken(type);
+            current = scanner.GetNextToken();
+        }
         public void MatchNextToken(TokenType type)
         {
-            current = scan.GetNextToken();
+            current = scanner.GetNextToken();
             MatchCurrentToken(type);
+        }
+        public void ThrowExpressionExpectedErr()
+        {
+            throw new TokenMismatchException($"Missing expression at line {current.lineNr}, character {current.startPos}. Found {current.type} token.");
         }
     }
 }

@@ -14,3 +14,6 @@ ParserUnitTests/bin
 ParserUnitTests/obj
 ParserTests/bin
 ParserTests/obj
+
+Interpreter/bin
+Interpreter/obj
