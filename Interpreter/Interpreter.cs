@@ -59,7 +59,7 @@ namespace Interpreter
     }
     public class Scope
     {
-        Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
+        public Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
         public Scope prev;
         public Scope() { }
         public Variable this[string key]
@@ -385,6 +385,17 @@ namespace Interpreter
                 left.IntVal *= mod;
             }
 
+            if (left.IntVal > 0 && node.op == "||")
+            {
+                valStack.Push(left);
+                return;
+            }
+            if (left.IntVal <= 0 && node.op == "&&")
+            {
+                valStack.Push(left);
+                return;
+            }
+
             Visit(node.right);
             var right = valStack.Pop();
             if (right.Type == "ref")
@@ -404,7 +415,6 @@ namespace Interpreter
                 case "||": left.IntVal = (left.IntVal > 0) || (right.IntVal > 0) ? 1 : 0; break;
                 default: throw new Exception("Unexpected operator");
             }
-            left.Type = "bool";
             valStack.Push(left);
         }
 

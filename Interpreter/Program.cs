@@ -18,8 +18,8 @@ namespace Interpreter
             if (key.KeyChar == '1')
             {
                 Console.WriteLine("Podaj ścieżkę do pliku");
-                //string path = Console.ReadLine();
-                string path = "file.txt";
+                string path = Console.ReadLine();
+                //string path = "file.txt";
                 try
                 {
                     stream = new StreamReader(path);
@@ -37,11 +37,13 @@ namespace Interpreter
             scan = new Scanner.Scanner(stream);
             scan = new Filter(scan);
             IParser pars = new Parser.Parser(scan);
-            var head = pars.Parse();          
-            printTree(head);
+            var head = pars.Parse();
+            //printTree(head);
             Console.WriteLine();
             IVisitor interpreter = new Interpreter();
-            interpreter.Visit(head);
+            try {
+            interpreter.Visit(head); }
+            catch(Exception e) { Console.WriteLine(e.Message); }
             Console.ReadKey();
         }
 

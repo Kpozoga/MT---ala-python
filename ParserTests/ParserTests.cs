@@ -36,12 +36,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseClassDef();
+            file.Close();
+            File.Delete(name);
             if (node is ClassNode)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -55,12 +55,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseFunDef();
+            file.Close();
+            File.Delete(name);
             if (node is FunNode)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
         [Test]
         public void FunCall()
@@ -73,12 +73,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseValueRefOrFunCall();
+            file.Close();
+            File.Delete(name);
             if (node is Parser.FunCall)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -92,12 +92,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseClassDef();
+            file.Close();
+            File.Delete(name);
             if (node is ClassNode n && n.Children[0] is AssignExpression)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -111,12 +111,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseClassDef();
+            file.Close();
+            File.Delete(name);
             if (node is ClassNode n && n.Children[0] is FunNode)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -130,12 +130,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.ParsePrimaryExpression();
+            file.Close();
+            File.Delete(name);
             if (node is NumericValue)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -149,13 +149,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             pars.current = pars.scanner.GetNextToken();
-            try{
-                var node = pars.ParsePrimaryExpression();
-                Assert.Fail();
-            }
-            catch (TokenMismatchException e) { Assert.Pass(); }          
+            var node = pars.ParsePrimaryExpression();
             file.Close();
             File.Delete(name);
+            if (node == null)
+                Assert.Pass();
+            else Assert.Fail();
         }
 
         [Test]
@@ -169,12 +168,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseValueRefOrFunCall();
+            file.Close();
+            File.Delete(name);
             if (node is ValueRef)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -188,12 +187,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var funParams = pars.TryParseFunCallParams();
+            file.Close();
+            File.Delete(name);
             if (funParams[0] is NumericValue && funParams[1] is StringValue && funParams[2] is ValueRef)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -207,12 +206,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var exp = pars.ParseMultExpression();
+            file.Close();
+            File.Delete(name);
             if (exp is MultiplicativeExpression e && e.right is NumericValue && e.left is MultiplicativeExpression)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -226,12 +225,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var exp = pars.ParseExpression();
+            file.Close();
+            File.Delete(name);
             if (exp is AdditiveExpression e && e.right is NumericValue && e.left is AdditiveExpression && e.op == "-")
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -245,12 +244,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseReturn();
+            file.Close();
+            File.Delete(name);
             if (node is ReturnNode n && n.Children[0] is NumericValue)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
 
@@ -265,12 +264,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseLine();
+            file.Close();
+            File.Delete(name);
             if (node is AssignExpression n && n.left is ValueRef && n.right is NumericValue)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
 
         [Test]
@@ -284,12 +283,12 @@ namespace ParserTests
             scan = new Scanner.Filter(scan);
             var pars = new Parser.Parser(scan);
             var node = pars.TryParseLine();
+            file.Close();
+            File.Delete(name);
             if (node is FunCall n && n.funParams.Count == 3)
                 Assert.Pass();
             else
                 Assert.Fail();
-            file.Close();
-            File.Delete(name);
         }
     }
 }

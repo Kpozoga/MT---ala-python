@@ -200,24 +200,24 @@ namespace Parser
         {
             if (current.type != TokenType.if_token)
                 return null;
-            MatchNextToken(TokenType.open_par);
+            //MatchNextToken(TokenType.open_par);
             current = scanner.GetNextToken();
             IExpression cond = ParseLogicExpression();
             if (cond == null)
                 ThrowExpressionExpectedErr();
-            MatchCurrentTokenAndConsume(TokenType.close_par);
+            //MatchCurrentTokenAndConsume(TokenType.close_par);
             return new IfNode(cond, ParseBlock());
         }
         public INode TryParseWhile()
         {
             if (current.type != TokenType.while_token)
                 return null;
-            MatchNextToken(TokenType.open_par);
+            //MatchNextToken(TokenType.open_par);
             current = scanner.GetNextToken();
             IExpression cond = ParseLogicExpression();
             if (cond == null)
                 ThrowExpressionExpectedErr();
-            MatchCurrentTokenAndConsume(TokenType.close_par);
+            //MatchCurrentTokenAndConsume(TokenType.close_par);
             return new WhileNode(cond, ParseBlock());
         }
         public INode TryParseReturn()

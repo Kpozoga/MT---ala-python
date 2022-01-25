@@ -1,0 +1,68 @@
+def some_func(self, sam)
+{a =123+ (ala.ma.kota((jak), "adfsgeg"))
+	print ("ma\tma\n")}
+class samochod
+{
+    nastepny_numer_produkcyjny = 1337
+    
+    
+    def __init__(self, price)
+    {
+        self.price = price
+        self.numer_produkcyjny = samochod.nastepny_numer_produkcyjny
+        samochod.nastepny_numer_produkcyjny +=-(1)*9-8
+    }
+    
+    def czyDrozszy(self, sam)
+    {
+	a = 0
+	if self.price-sam.price>0
+	{
+	    a = 1
+	}
+	if self.price-sam.price<0
+	{
+	    a = -1
+	}
+        return a
+    }
+}
+
+def main()
+{
+	a = -1
+	b=a
+	b= -(1)*9-8*(-a)
+	if b<-10&&3>4
+{
+	b=69
+	print("gun")
+	func(b)
+}
+	i = 10
+	c=3
+	c.new = 5
+	for i = c:6
+	{
+	print("petla",i)
+	c+=2
+	while c>0
+{	print("whileloop",c) c-=1 c.new+=1}
+	}
+	samochod.__init__(a,b)
+	print("ala ma ",c.new," dzieci")
+	print("zalążki klasy ",samochod.nastepny_numer_produkcyjny)
+	print("atrybuty: ", a.price, ", ", a.numer_produkcyjny)
+	#a.bigboy()
+	samochod.nastepny_numer_produkcyjny = 6669
+	klasa = samochod(69)
+	d = klasa.czyDrozszy(a)
+	if d>0{
+	    print("prawdziwy drozszy",klasa.price,a.price)}
+	print("atrybuty: ", klasa.price, ", ", klasa.numer_produkcyjny,", ",klasa.nastepny_numer_produkcyjny)
+}
+
+def func(a)
+{
+	b = a a = 10
+}

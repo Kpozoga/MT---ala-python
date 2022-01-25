@@ -17,3 +17,5 @@ ParserTests/obj
 
 Interpreter/bin
 Interpreter/obj
+InterpreterTests/bin
+InterpreterTests/obj

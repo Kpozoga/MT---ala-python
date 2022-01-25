@@ -17,8 +17,8 @@ namespace Parser
             if (key.KeyChar == '1')
             {
                 Console.WriteLine("Podaj ścieżkę do pliku");
-                //string path = Console.ReadLine();
-                string path = "file.txt";
+                string path = Console.ReadLine();
+                //string path = "file.txt";
                 try
                 {
                     stream = new StreamReader(path);
