@@ -29,6 +29,8 @@ namespace Parser
     {
         public ITokenator scanner;
         public Token current;
+        public List<string> classes = new List<string>();
+        public List<string> functions = new List<string>();
         public Parser(ITokenator scanner)
         {
             this.scanner = scanner;
@@ -69,6 +71,8 @@ namespace Parser
                     nodes.Add(node);
             } while (node != null) ;
             MatchCurrentTokenAndConsume(TokenType.close_brace);
+            if (classes.Contains(name)) throw new Exception($"Class {name} already defined");
+            classes.Add(name);
             return new ClassNode(name, nodes);
         }
         public INode TryParseVarDef(string prefix = "")
@@ -90,6 +94,8 @@ namespace Parser
             current = scanner.GetNextToken();
             var args = ParseFunArgs();
             var body = ParseFunBody();
+            if (functions.Contains(name+args.Count)) throw new Exception($"Function {name} with {args.Count} arguments already defined");
+            functions.Add(name+args.Count);
             return new FunNode(name, args, body);
         }
         public List<string> ParseFunArgs()
